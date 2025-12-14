@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>RepoMirror – GitHub Repository Evaluator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="container">
+    <h1>RepoMirror</h1>
+    <p class="tagline">
+      See your GitHub repository the way a mentor or recruiter might.
+    </p>
+
+    <div class="input-box">
+      <input type="text" id="repoUrl" placeholder="Paste GitHub Repository URL here" />
+      <button onclick="analyzeRepo()">Analyze Repository</button>
+    </div>
+
+    <div id="results" class="hidden">
+      <h2>Repository Evaluation</h2>
+
+      <div class="score">
+        <h3>Score</h3>
+        <p id="scoreValue">–</p>
+      </div>
+
+      <div class="summary">
+        <h3>Summary</h3>
+        <p id="summaryText"></p>
+      </div>
+
+      <div class="roadmap">
+        <h3>Personalized Roadmap</h3>
+        <ul id="roadmapList"></ul>
+      </div>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
