@@ -1,3 +1,5 @@
+console.log("SCRIPT LOADED");
+
 async function analyzeRepository() {
   const input = document.getElementById("repoInput").value.trim();
   if (!input) {
@@ -56,4 +58,5 @@ async function analyzeRepository() {
     alert(err.message);
   }
 }
+
 
