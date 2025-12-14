@@ -1,58 +1,72 @@
-const btn = document.getElementById("analyzeBtn");
-const input = document.getElementById("repoInput");
-
-btn.addEventListener("click", async () => {
-  console.log("Button clicked"); // DEBUG LINE
-
-  const value = input.value.trim();
-  if (!value) {
-    alert("Enter a GitHub repo");
+async function analyzeRepo() {
+  const repo = document.getElementById("repoInput").value.trim();
+  if (!repo) {
+    alert("Please enter a repository (owner/repo)");
     return;
   }
 
-  const repoPath = value.includes("github.com")
-    ? value.split("github.com/")[1]
-    : value;
+  const resultDiv = document.getElementById("result");
+  const scoreText = document.getElementById("scoreText");
+  const summaryText = document.getElementById("summaryText");
+  const roadmapList = document.getElementById("roadmapList");
+
+  resultDiv.classList.add("hidden");
+  roadmapList.innerHTML = "";
 
   try {
-    const res = await fetch(`https://api.github.com/repos/${repoPath}`);
-    if (!res.ok) throw new Error("Repo not found");
+    const response = await fetch(`https://api.github.com/repos/${repo}`);
+    if (!response.ok) {
+      alert("Repository not found or API limit exceeded");
+      return;
+    }
 
-    const data = await res.json();
+    const data = await response.json();
 
-    let score = 50;
-    if (data.stargazers_count > 1000) score += 20;
-    if (data.forks_count > 100) score += 10;
+    // ---------- SCORING LOGIC ----------
+    let score = 40;
+
+    if (data.description) score += 10;
     if (data.language) score += 10;
-    if (data.open_issues_count < 20) score += 10;
+    if (data.stargazers_count > 50) score += 10;
+    if (data.stargazers_count > 1000) score += 10;
+    if (data.forks_count > 20) score += 10;
+    if (data.open_issues_count < 10) score += 10;
 
     if (score > 100) score = 100;
 
-    const level =
+    let level =
       score >= 85 ? "Advanced" :
       score >= 65 ? "Intermediate" :
       "Beginner";
 
-    document.getElementById("score").innerText =
-      `${score} / 100 — ${level}`;
+    // ---------- OUTPUT ----------
+    scoreText.innerText = `${score} / 100 — ${level}`;
 
-    document.getElementById("summary").innerText =
-      `Primary language: ${data.language || "Unknown"}.
-       Stars: ${data.stargazers_count}.
-       Forks: ${data.forks_count}.`;
+    summaryText.innerText = `
+Primary language: ${data.language || "Not specified"}.
+Stars: ${data.stargazers_count}.
+Forks: ${data.forks_count}.
+Open issues: ${data.open_issues_count}.
+Last updated: ${new Date(data.updated_at).toDateString()}.
+    `;
 
-    const roadmap = document.getElementById("roadmap");
-    roadmap.innerHTML = "";
-
+    // ---------- ROADMAP ----------
     if (!data.description)
-      roadmap.innerHTML += "<li>Add a clear project description</li>";
+      roadmapList.innerHTML += "<li>Add a clear project description</li>";
 
-    roadmap.innerHTML += "<li>Add tests</li>";
-    roadmap.innerHTML += "<li>Improve documentation</li>";
+    if (data.open_issues_count > 20)
+      roadmapList.innerHTML += "<li>Reduce open issues</li>";
+
+    if (data.stargazers_count < 50)
+      roadmapList.innerHTML += "<li>Improve documentation and visibility</li>";
+
+    roadmapList.innerHTML += "<li>Add tests and CI/CD</li>";
+    roadmapList.innerHTML += "<li>Improve commit consistency</li>";
+
+    resultDiv.classList.remove("hidden");
 
   } catch (err) {
-    alert("Error: " + err.message);
+    alert("Something went wrong");
     console.error(err);
   }
-});
-
+}
