@@ -1,8 +1,8 @@
 async function analyzeRepo() {
-  const repo = document.getElementById("repoInput").value.trim();
+  const input = document.getElementById("repoInput").value.trim();
 
-  if (!repo.includes("/")) {
-    alert("Enter repo as owner/repo");
+  if (!input.includes("/")) {
+    alert("Use format: owner/repo");
     return;
   }
 
@@ -15,8 +15,8 @@ async function analyzeRepo() {
   roadmapEl.innerHTML = "";
 
   try {
-    const res = await fetch(`https://api.github.com/repos/${repo}`);
-    const data = await res.json();
+    const response = await fetch(`https://api.github.com/repos/${input}`);
+    const data = await response.json();
 
     if (data.message) {
       scoreEl.innerText = "Error";
@@ -26,11 +26,10 @@ async function analyzeRepo() {
 
     let score = 50;
 
-    if (data.stargazers_count > 100) score += 10;
+    if (data.stargazers_count > 100) score += 15;
     if (data.forks_count > 50) score += 10;
-    if (data.open_issues_count < 20) score += 5;
-    if (data.language) score += 5;
-    if (data.size > 1000) score += 10;
+    if (data.language) score += 10;
+    if (data.open_issues_count < 20) score += 10;
 
     let level =
       score >= 80 ? "Advanced" :
@@ -42,21 +41,13 @@ async function analyzeRepo() {
     summaryEl.innerText =
       `This repository uses ${data.language || "multiple technologies"}.
        It has ${data.stargazers_count} stars and ${data.forks_count} forks.
-       The project shows ${level.toLowerCase()} maturity and real-world relevance.`;
+       Overall maturity: ${level}.`;
 
     const roadmap = [];
-
-    if (!data.description)
-      roadmap.push("Add a clear project description");
-
-    if (data.open_issues_count > 20)
-      roadmap.push("Reduce open issues and improve stability");
-
-    if (!data.language)
-      roadmap.push("Define a primary programming language");
-
-    roadmap.push("Improve documentation and add usage examples");
-    roadmap.push("Maintain consistent commit history");
+    if (!data.description) roadmap.push("Add a clear project description");
+    if (data.open_issues_count > 20) roadmap.push("Reduce open issues");
+    roadmap.push("Improve documentation");
+    roadmap.push("Maintain consistent commits");
 
     roadmap.forEach(item => {
       const li = document.createElement("li");
@@ -64,8 +55,9 @@ async function analyzeRepo() {
       roadmapEl.appendChild(li);
     });
 
-  } catch (err) {
+  } catch (e) {
     scoreEl.innerText = "Failed";
     summaryEl.innerText = "Could not analyze repository.";
   }
 }
+
