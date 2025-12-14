@@ -1,62 +1,61 @@
-console.log("SCRIPT LOADED");
+const analyzeBtn = document.getElementById("analyzeBtn");
 
-async function analyzeRepository() {
+analyzeBtn.addEventListener("click", async () => {
   const input = document.getElementById("repoInput").value.trim();
   if (!input) {
-    alert("Please enter a GitHub repository (owner/repo)");
+    alert("Enter a GitHub repo (owner/repo)");
     return;
   }
 
-  const url = `https://api.github.com/repos/${input}`;
+  // normalize input
+  const repoPath = input.includes("github.com")
+    ? input.split("github.com/")[1]
+    : input;
+
+  const url = `https://api.github.com/repos/${repoPath}`;
 
   try {
     const res = await fetch(url);
-    if (!res.ok) throw new Error("Repository not found");
-
+    if (!res.ok) throw new Error("Repo not found");
     const data = await res.json();
 
-    // Basic signals
-    const stars = data.stargazers_count;
-    const forks = data.forks_count;
-    const issues = data.open_issues_count;
-    const updated = new Date(data.updated_at);
+    // ---- REAL METRICS ----
+    let score = 50;
+    if (data.stargazers_count > 1000) score += 20;
+    if (data.forks_count > 100) score += 10;
+    if (data.open_issues_count < 20) score += 10;
+    if (data.language) score += 10;
 
-    // Simple scoring logic (VERY IMPORTANT for hackathon)
-    let score = 40;
-    if (stars > 1000) score += 20;
-    else if (stars > 100) score += 10;
-
-    if (forks > 500) score += 15;
-    else if (forks > 50) score += 8;
-
-    if (issues < 50) score += 10;
-    if (data.description) score += 5;
-
-    if (score > 90) score = 90;
+    if (score > 100) score = 100;
 
     let level =
-      score >= 80 ? "Advanced" :
-      score >= 60 ? "Intermediate" :
+      score >= 85 ? "Advanced" :
+      score >= 65 ? "Intermediate" :
       "Beginner";
 
-    // Update UI
     document.getElementById("score").innerText =
       `${score} / 100 — ${level}`;
 
     document.getElementById("summary").innerText =
-      `This repository "${data.full_name}" is written primarily in ${
-        data.language || "multiple languages"
-      }. It has ${stars} stars and ${forks} forks. Last updated on ${updated.toDateString()}.`;
+      `This repository is primarily written in ${data.language || "multiple languages"}.
+       It has ${data.stargazers_count} stars and ${data.forks_count} forks,
+       indicating ${score >= 80 ? "strong" : "moderate"} community interest.`;
 
-    document.getElementById("roadmap").innerHTML = `
-      <li>Add or improve README documentation</li>
-      <li>Increase test coverage</li>
-      <li>Maintain consistent commit history</li>
-      <li>Improve issue management and labels</li>
-    `;
+    const roadmap = document.getElementById("roadmap");
+    roadmap.innerHTML = "";
+
+    if (!data.description) {
+      roadmap.innerHTML += "<li>Add a clear project description</li>";
+    }
+    if (data.open_issues_count > 20) {
+      roadmap.innerHTML += "<li>Address open issues to improve stability</li>";
+    }
+    roadmap.innerHTML += "<li>Add contribution guidelines</li>";
+    roadmap.innerHTML += "<li>Introduce automated testing</li>";
+
   } catch (err) {
-    alert(err.message);
+    alert("Invalid repository or API limit hit");
   }
-}
+});
 
 
