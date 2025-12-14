@@ -3,104 +3,30 @@
 <head>
   <meta charset="UTF-8" />
   <title>RepoMirror</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 700px;
-      margin: 80px auto;
-      background: #fff;
-      padding: 40px;
-      border-radius: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.1);
-    }
-    input {
-      width: 65%;
-      padding: 10px;
-      font-size: 16px;
-    }
-    button {
-      padding: 10px 18px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-    .hidden {
-      display: none;
-    }
-    .score {
-      font-size: 22px;
-      font-weight: bold;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-<div class="container">
-  <h1>RepoMirror</h1>
-  <p>Analyze a GitHub repository using real metadata.</p>
 
-  <input id="repoInput" placeholder="owner/repo (e.g. facebook/react)">
-  <button onclick="analyzeRepo()">Analyze</button>
+  <h1>RepoMirror</h1>
+  <p>See your GitHub repository the way a mentor or recruiter might.</p>
+
+  <input id="repoInput" placeholder="owner/repo (e.g. facebook/react)" />
+  <button onclick="analyzeRepo()">Analyze Repository</button>
 
   <div id="result" class="hidden">
     <h2>Repository Evaluation</h2>
-    <p class="score" id="score"></p>
-    <p id="summary"></p>
-    <ul id="roadmap"></ul>
+
+    <h3>Score</h3>
+    <p id="scoreText"></p>
+
+    <h3>Summary</h3>
+    <p id="summaryText"></p>
+
+    <h3>Personalized Roadmap</h3>
+    <ul id="roadmapList"></ul>
   </div>
-</div>
 
-<script>
-async function analyzeRepo() {
-  const repo = document.getElementById("repoInput").value.trim();
-  if (!repo) {
-    alert("Enter owner/repo");
-    return;
-  }
-
-  const res = await fetch(`https://api.github.com/repos/${repo}`);
-  if (!res.ok) {
-    alert("Repo not found");
-    return;
-  }
-
-  const data = await res.json();
-
-  let score = 40;
-  if (data.description) score += 10;
-  if (data.language) score += 10;
-  if (data.stargazers_count > 100) score += 15;
-  if (data.forks_count > 50) score += 10;
-  if (data.open_issues_count < 10) score += 15;
-  if (score > 100) score = 100;
-
-  let level =
-    score >= 85 ? "Advanced" :
-    score >= 65 ? "Intermediate" :
-    "Beginner";
-
-  document.getElementById("score").innerText =
-    `${score}/100 — ${level}`;
-
-  document.getElementById("summary").innerText =
-    `Language: ${data.language || "N/A"}
-Stars: ${data.stargazers_count}
-Forks: ${data.forks_count}
-Open Issues: ${data.open_issues_count}`;
-
-  const roadmap = document.getElementById("roadmap");
-  roadmap.innerHTML = "";
-  if (!data.description) roadmap.innerHTML += "<li>Add README</li>";
-  if (data.stargazers_count < 50) roadmap.innerHTML += "<li>Improve visibility</li>";
-  roadmap.innerHTML += "<li>Add tests & CI</li>";
-
-  document.getElementById("result").classList.remove("hidden");
-}
-</script>
-
+  <script src="script.js"></script>
 </body>
 </html>
+
