@@ -38,4 +38,4 @@ The focus is on **honest feedback, clarity, and actionable guidance**, similar t
 - LLM-based feedback generation for richer mentor-style summaries
 
 ## Live Demo
-👉 (paste your Vercel link here)
+👉 https://repo-mirror-deploy.vercel.app
