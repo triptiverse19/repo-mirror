@@ -1,37 +1,43 @@
-function analyzeRepo() {
-  const url = document.getElementById("repoUrl").value.trim();
+async function analyzeRepo() {
+  const url = document.getElementById("repoInput").value.trim();
+  const result = document.getElementById("result");
 
-  if (url === "") {
-    alert("Please paste a GitHub repository URL.");
+  if (!url.includes("github.com")) {
+    result.innerHTML = "<p>Please enter a valid GitHub repository URL.</p>";
     return;
   }
 
-  // Show results section
-  document.getElementById("results").classList.remove("hidden");
+  const parts = url.replace("https://github.com/", "").split("/");
+  const owner = parts[0];
+  const repo = parts[1];
 
-  // Score (prototype logic)
-  document.getElementById("scoreValue").innerText =
-    "72 / 100 — Intermediate";
+  try {
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`);
+    if (!response.ok) throw new Error("Repo not found");
 
-  // Summary
-  document.getElementById("summaryText").innerText =
-    "This repository demonstrates a clear project goal and basic structure. However, documentation, testing, and consistent version control practices can be improved to make it recruiter-ready.";
+    const data = await response.json();
 
-  // Roadmap steps
-  const roadmapSteps = [
-    "Add a detailed README.md explaining the project purpose and setup",
-    "Organize files into clear folders for better maintainability",
-    "Write basic unit tests for important components",
-    "Use meaningful and consistent Git commit messages",
-    "Explore CI/CD pipelines to automate checks and testing"
-  ];
+    // Simple heuristic scoring
+    let score = 50;
+    if (data.stargazers_count > 100) score += 15;
+    if (data.forks_count > 50) score += 10;
+    if (data.description) score += 10;
+    if (!data.archived) score += 5;
+    if (data.open_issues_count < 20) score += 10;
 
-  const roadmapList = document.getElementById("roadmapList");
-  roadmapList.innerHTML = "";
+    let level =
+      score >= 85 ? "Advanced" :
+      score >= 65 ? "Intermediate" :
+      "Beginner";
 
-  roadmapSteps.forEach(step => {
-    const li = document.createElement("li");
-    li.innerText = step;
-    roadmapList.appendChild(li);
-  });
-}
+    result.innerHTML = `
+      <h3>Repository Reflection</h3>
+      <p><strong>Score:</strong> ${score} / 100 — ${level}</p>
+      <p><strong>Stars:</strong> ${data.stargazers_count}</p>
+      <p><strong>Forks:</strong> ${data.forks_count}</p>
+      <p><strong>Language:</strong> ${data.language}</p>
+      <p><strong>Summary:</strong> ${data.description || "No description provided."}</p>
+    `;
+
+  } catch (err) {
+    result.innerHTML = "<p>Error fetching reposito
