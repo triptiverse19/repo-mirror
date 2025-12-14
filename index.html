@@ -3,34 +3,39 @@
 <head>
   <meta charset="UTF-8" />
   <title>RepoMirror</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <h1>RepoMirror</h1>
-  <p>See your GitHub repository the way a mentor or recruiter might.</p>
+  <div class="container">
+    <h1>RepoMirror</h1>
+    <p class="subtitle">
+      See your GitHub repository the way a mentor or recruiter might.
+    </p>
 
-  <input
-    id="repoInput"
-    type="text"
-    placeholder="owner/repo or full GitHub URL"
-    style="width:300px"
-  />
-  <button id="analyzeBtn">Analyze Repository</button>
+    <div class="input-box">
+      <input
+        type="text"
+        id="repoInput"
+        placeholder="owner/repository  (e.g. facebook/react)"
+      />
+      <button onclick="analyzeRepo()">Analyze Repository</button>
+    </div>
 
-  <h2>Repository Evaluation</h2>
+    <div id="result" class="hidden">
+      <h2>Repository Evaluation</h2>
 
-  <h3>Score</h3>
-  <p id="score">—</p>
+      <p class="score" id="scoreText"></p>
 
-  <h3>Summary</h3>
-  <p id="summary">—</p>
+      <h3>Summary</h3>
+      <p id="summaryText"></p>
 
-  <h3>Personalized Roadmap</h3>
-  <ul id="roadmap"></ul>
+      <h3>Personalized Roadmap</h3>
+      <ul id="roadmapList"></ul>
+    </div>
+  </div>
 
-  <!-- THIS LINE IS CRITICAL -->
   <script src="script.js"></script>
-
 </body>
 </html>
 
