@@ -2,41 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>RepoMirror – GitHub Repository Evaluator</title>
+  <title>RepoMirror</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-  <div class="container">
-    <h1>RepoMirror</h1>
-    <p class="tagline">
-      See your GitHub repository the way a mentor or recruiter might.
-    </p>
+  <h1>RepoMirror</h1>
+  <p>See your GitHub repository the way a mentor or recruiter might.</p>
 
-    <div class="input-box">
-      <input type="text" id="repoUrl" placeholder="Paste GitHub Repository URL here" />
-      <button onclick="analyzeRepo()">Analyze Repository</button>
-    </div>
+  <input
+    id="repoInput"
+    type="text"
+    placeholder="owner/repo  (e.g. facebook/react)"
+    style="width: 300px;"
+  />
 
-    <div id="results" class="hidden">
-      <h2>Repository Evaluation</h2>
+  <button onclick="analyzeRepo()">Analyze Repository</button>
 
-      <div class="score">
-        <h3>Score</h3>
-        <p id="scoreValue">–</p>
-      </div>
+  <hr />
 
-      <div class="summary">
-        <h3>Summary</h3>
-        <p id="summaryText"></p>
-      </div>
+  <h2>Repository Reflection</h2>
 
-      <div class="roadmap">
-        <h3>Personalized Roadmap</h3>
-        <ul id="roadmapList"></ul>
-      </div>
-    </div>
-  </div>
+  <h3>Score</h3>
+  <p id="score">—</p>
+
+  <h3>Summary</h3>
+  <p id="summary">—</p>
+
+  <h3>Personalized Roadmap</h3>
+  <ul id="roadmap"></ul>
 
   <script src="script.js"></script>
 </body>
