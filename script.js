@@ -1,63 +1,59 @@
-async function analyzeRepo() {
+async function analyzeRepository() {
   const input = document.getElementById("repoInput").value.trim();
-
-  if (!input.includes("/")) {
-    alert("Use format: owner/repo");
+  if (!input) {
+    alert("Please enter a GitHub repository (owner/repo)");
     return;
   }
 
-  const scoreEl = document.getElementById("score");
-  const summaryEl = document.getElementById("summary");
-  const roadmapEl = document.getElementById("roadmap");
-
-  scoreEl.innerText = "Analyzing...";
-  summaryEl.innerText = "";
-  roadmapEl.innerHTML = "";
+  const url = `https://api.github.com/repos/${input}`;
 
   try {
-    const response = await fetch(`https://api.github.com/repos/${input}`);
-    const data = await response.json();
+    const res = await fetch(url);
+    if (!res.ok) throw new Error("Repository not found");
 
-    if (data.message) {
-      scoreEl.innerText = "Error";
-      summaryEl.innerText = data.message;
-      return;
-    }
+    const data = await res.json();
 
-    let score = 50;
+    // Basic signals
+    const stars = data.stargazers_count;
+    const forks = data.forks_count;
+    const issues = data.open_issues_count;
+    const updated = new Date(data.updated_at);
 
-    if (data.stargazers_count > 100) score += 15;
-    if (data.forks_count > 50) score += 10;
-    if (data.language) score += 10;
-    if (data.open_issues_count < 20) score += 10;
+    // Simple scoring logic (VERY IMPORTANT for hackathon)
+    let score = 40;
+    if (stars > 1000) score += 20;
+    else if (stars > 100) score += 10;
+
+    if (forks > 500) score += 15;
+    else if (forks > 50) score += 8;
+
+    if (issues < 50) score += 10;
+    if (data.description) score += 5;
+
+    if (score > 90) score = 90;
 
     let level =
       score >= 80 ? "Advanced" :
       score >= 60 ? "Intermediate" :
       "Beginner";
 
-    scoreEl.innerText = `${score} / 100 — ${level}`;
+    // Update UI
+    document.getElementById("score").innerText =
+      `${score} / 100 — ${level}`;
 
-    summaryEl.innerText =
-      `This repository uses ${data.language || "multiple technologies"}.
-       It has ${data.stargazers_count} stars and ${data.forks_count} forks.
-       Overall maturity: ${level}.`;
+    document.getElementById("summary").innerText =
+      `This repository "${data.full_name}" is written primarily in ${
+        data.language || "multiple languages"
+      }. It has ${stars} stars and ${forks} forks. Last updated on ${updated.toDateString()}.`;
 
-    const roadmap = [];
-    if (!data.description) roadmap.push("Add a clear project description");
-    if (data.open_issues_count > 20) roadmap.push("Reduce open issues");
-    roadmap.push("Improve documentation");
-    roadmap.push("Maintain consistent commits");
-
-    roadmap.forEach(item => {
-      const li = document.createElement("li");
-      li.innerText = item;
-      roadmapEl.appendChild(li);
-    });
-
-  } catch (e) {
-    scoreEl.innerText = "Failed";
-    summaryEl.innerText = "Could not analyze repository.";
+    document.getElementById("roadmap").innerHTML = `
+      <li>Add or improve README documentation</li>
+      <li>Increase test coverage</li>
+      <li>Maintain consistent commit history</li>
+      <li>Improve issue management and labels</li>
+    `;
+  } catch (err) {
+    alert(err.message);
   }
 }
 
