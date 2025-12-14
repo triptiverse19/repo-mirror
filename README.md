@@ -39,3 +39,10 @@ The focus is on **honest feedback, clarity, and actionable guidance**, similar t
 
 ## Live Demo
 👉 https://repo-mirror-deploy.vercel.app
+
+## ⚠️ Note on Evaluation Logic
+
+RepoMirror currently uses heuristic and rule-based analysis to simulate repository evaluation based on repository metadata and naming patterns.
+
+This prototype demonstrates the concept and UX of an AI-assisted repository feedback tool. Future versions will integrate GitHub APIs and LLM-based analysis for deeper insights.
+
