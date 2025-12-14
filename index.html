@@ -1,37 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <title>RepoMirror</title>
-  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
   <h1>RepoMirror</h1>
-  <p>See your GitHub repository the way a mentor or recruiter might.</p>
 
   <input
     id="repoInput"
     type="text"
-    placeholder="owner/repo  (e.g. facebook/react)"
-    style="width: 300px;"
+    placeholder="owner/repo (e.g. facebook/react)"
   />
 
   <button onclick="analyzeRepo()">Analyze Repository</button>
 
-  <hr />
-
-  <h2>Repository Reflection</h2>
-
-  <h3>Score</h3>
-  <p id="score">—</p>
-
-  <h3>Summary</h3>
+  <h3 id="score">—</h3>
   <p id="summary">—</p>
-
-  <h3>Personalized Roadmap</h3>
   <ul id="roadmap"></ul>
 
   <script src="script.js"></script>
 </body>
 </html>
+
